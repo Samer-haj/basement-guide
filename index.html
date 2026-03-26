@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Basement Renovation Guide | Lazord Contracting</title>
+    
+    <!-- Tailwind CSS (via CDN for static hosting) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        teal: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#0d8482', // Matching your brand
+                            900: '#134e4a',
+                        }
+                    },
+                    keyframes: {
+                        shimmer: {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(100%)' }
+                        }
+                    },
+                    animation: {
+                        shimmer: 'shimmer 2s infinite'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom Styles -->
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Ensure images load smoothly */
+        img {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        /* Custom scrollbar for a polished look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0d8482; 
+        }
+
+        /* Hide scrollbar for mobile phase horizontal scrolling but keep functionality */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 selection:bg-teal-100 selection:text-teal-900">
+    <div class="min-h-screen p-3 sm:p-4 md:p-8">
+        <div class="max-w-5xl mx-auto space-y-6 md:space-y-8">
+            
+            <!-- Header & Progress -->
+            <div class="bg-white p-5 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex flex-col-reverse md:flex-row justify-between items-start md:items-center gap-5 md:gap-6 mb-6 md:mb-8 border-b border-slate-100 pb-5 md:pb-8">
+                    <div class="max-w-xl">
+                        <div class="inline-block px-3 py-1 bg-teal-50 text-teal-700 text-[10px] md:text-xs font-bold uppercase tracking-wider rounded-full mb-3 md:mb-4">
+                            Interactive Guide
+                        </div>
+                        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-2 md:mb-3 tracking-tight">Basement Renovation Roadmap</h1>
+                        <p class="text-base md:text-lg text-slate-600 leading-relaxed">A practical, step-by-step checklist based on London, Ontario building guidelines to help you plan smarter and avoid costly mistakes.</p>
+                    </div>
+                    
+                    <!-- Official Lazord Logo -->
+                    <img 
+                        src="Color%20logo%20-%20no%20background.png" 
+                        alt="Lazord Contracting Logo" 
+                        class="h-12 sm:h-16 md:h-20 shrink-0 object-contain drop-shadow-sm mb-2 md:mb-0"
+                        onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='block';"
+                    />
+                    <!-- Fallback if image isn't in folder yet -->
+                    <svg id="logo-fallback" style="display: none;" viewBox="0 0 500 180" class="h-12 sm:h-16 md:h-20 shrink-0 drop-shadow-sm mb-2 md:mb-0" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Lazord Contracting Logo">
+                        <path d="M 180 50 C 230 15 280 15 360 60" stroke="#0d8482" stroke-width="8" stroke-linecap="round"/>
+                        <path d="M 130 65 L 260 65" stroke="#0d8482" stroke-width="8" stroke-linecap="round"/>
+                        <path d="M 215 40 L 215 65" stroke="#0d8482" stroke-width="8" stroke-linecap="round"/>
+                        <path d="M 335 45 L 345 30" stroke="#0d8482" stroke-width="8" stroke-linecap="round"/>
+                        <text x="250" y="130" font-family="Arial, sans-serif" font-size="72" font-weight="800" fill="#0d8482" text-anchor="middle" letter-spacing="4">LAZORD</text>
+                        <text x="250" y="165" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#71717a" text-anchor="middle" letter-spacing="18">CONTRACTING</text>
+                    </svg>
+                </div>
+                
+                <div class="space-y-3 bg-slate-50 p-4 md:p-5 rounded-xl border border-slate-100">
+                    <div class="flex justify-between text-xs md:text-sm font-bold text-slate-700 uppercase tracking-wide">
+                        <span>Project Checkpoints</span>
+                        <span id="progress-percentage" class="text-teal-700">0% Complete</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-3 md:h-4 overflow-hidden shadow-inner">
+                        <div id="progress-bar" class="bg-teal-600 h-3 md:h-4 rounded-full transition-all duration-700 ease-out relative overflow-hidden" style="width: 0%">
+                            <div class="absolute inset-0 bg-white/20 w-full h-full skew-x-12 transform -translate-x-full animate-[shimmer_2s_infinite]"></div>
+                        </div>
+                    </div>
+                    <p id="progress-text" class="text-[10px] md:text-xs text-slate-500 text-right">0 of 16 Steps Finished</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-6 md:gap-8">
+                
+                <!-- Sidebar / Phase Navigation -->
+                <div class="md:w-1/3 flex flex-col gap-3 md:gap-4 overflow-hidden w-full">
+                    
+                    <div class="flex justify-between items-end px-1 md:px-2">
+                        <h3 class="font-bold text-base md:text-lg text-slate-900">Renovation Phases</h3>
+                        
+                        <!-- Mobile Swipe Indicator -->
+                        <div class="flex items-center gap-1 text-xs text-teal-600 font-bold animate-pulse md:hidden tracking-wide uppercase">
+                            <span>Swipe</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile Optimization: Horizontal scrolling for phases -->
+                    <div id="sidebar-phases" class="flex flex-row md:flex-col gap-3 md:gap-4 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x hide-scrollbar">
+                        <!-- Phases injected via JS -->
+                    </div>
+
+                    <!-- Warning Box -->
+                    <div class="mt-2 md:mt-4 bg-white border-l-4 border-amber-500 shadow-sm p-4 md:p-5 rounded-r-xl flex gap-3 md:gap-4 text-slate-800">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 md:w-6 md:h-6 shrink-0 text-amber-500 mt-0.5"></i>
+                        <div class="text-xs md:text-sm leading-relaxed">
+                            <p class="font-bold text-amber-900 mb-1 text-sm md:text-base">Key Takeaway</p>
+                            <p>Sequence is everything. Do not jump to drywall or framing until Phase 1 moisture checks and permits are thoroughly completed.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="md:w-2/3 bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 min-h-[600px]">
+                    <div class="mb-6 md:mb-8 border-b border-slate-100 pb-4">
+                        <h2 id="phase-title" class="text-2xl sm:text-3xl font-extrabold text-slate-900"></h2>
+                        <p id="phase-subtitle" class="text-slate-500 mt-2 text-base md:text-lg"></p>
+                    </div>
+                    
+                    <div id="steps-container" class="space-y-4">
+                        <!-- Steps injected via JS -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+    <!-- App Logic -->
+    <script>
+        // --- Data Structure ---
+        const renovationData = [
+            {
+            phaseId: 1,
+            phaseTitle: "Phase 1: Planning & Prep",
+            phaseSubtitle: "Securing the envelope and getting approvals.",
+            steps: [
+                {
+                id: 1,
+                title: "Moisture and Condition Check",
+                icon: "droplets",
+                imageUrl: "https://v0-basement-renovation-guide.vercel.app/images/moisture-check.jpg",
+                description: "Assess the basement for water stains, active seepage, foundation cracks, musty odours, visible mold, or uneven slab areas. Check the exterior grading to ensure water flows away from the house.",
+                commonMistake: "Ignoring hidden moisture and covering it up with drywall, which inevitably leads to mold and poor air quality.",
+                proTip: "Building Science Corporation notes that groundwater and rainwater management must be addressed before insulating to prevent mold.",
+                resourceLinks: [
+                    { title: "Building Science Corp: Moisture Control", url: "https://buildingscience.com/documents/information-sheets/basement-insulation" }
+                ]
+                },
+                {
+                id: 2,
+                title: "Define the Use of the Space",
+                icon: "home",
+                description: "Decide exactly what the space will be (e.g., rec room, bedroom, secondary unit). Mapping this out early ensures you don't build a layout that violates local zoning or safety codes.",
+                commonMistake: "Assuming all basement rooms have the same building code requirements. (e.g. Bedrooms require specific egress windows).",
+                proTip: "City of London specifically lists changing room uses, basement apartments, and enlarging windows as projects requiring permits.",
+                resourceLinks: [
+                    { title: "City of London Permits", url: "https://london.ca/living-london/building-renovating/building-permits" }
+                ]
+                },
+                {
+                id: 3,
+                title: "Plan Layout and Permit Drawings",
+                icon: "ruler",
+                description: "Map out wall locations, bathrooms, mechanical room access, and window upgrades. Prepare detailed, scaled drawings for permit applications. Note the locations of your electrical panel and furnace.",
+                commonMistake: "Starting demolition or framing before pulling the necessary City of London and ESA permits.",
+                proTip: "Confirm if you need a Building permit, Plumbing permit, HVAC review, and ESA electrical notification. ESA notification is required for almost all electrical work.",
+                resourceLinks: [
+                    { title: "City of London Permits", url: "https://london.ca/living-london/building-renovating/building-permits" },
+                    { title: "ESA Electrical Safety", url: "https://esasafe.com/home-renovation-buying-and-selling/homeowners/" }
+                ]
+                },
+                {
+                id: 4,
+                title: "Address Safety Requirements Early",
+                icon: "shield-alert",
+                description: "Plan for emergency escape (egress) windows for bedrooms, smoke alarms, and carbon monoxide alarms. Fire separation details are needed for multi-unit situations.",
+                commonMistake: "Forgetting to budget for cutting the concrete foundation to enlarge a window for egress before interior framing begins.",
+                proTip: "Ontario requires working smoke alarms on every storey. New rules also require CO alarms on every storey in homes with fuel-burning appliances (effective Jan 1, 2026).",
+                resourceLinks: [
+                    { title: "TSSA CO Alarm Rules", url: "https://www.tssa.org/changes-ontario-fire-code-new-requirements-co-alarms" },
+                    { title: "London Fire Department", url: "https://london.ca/living-london/community-services/fire-emergency-services" }
+                ]
+                },
+                {
+                id: 5,
+                title: "Demolition and Strip-Out",
+                icon: "hammer",
+                description: "Remove old paneling, drywall, flooring, and damaged insulation to expose the perimeter walls and ceilings. Rent a proper disposal bin and cap off live wires.",
+                commonMistake: "Tearing out old materials in historic homes without checking for hazardous asbestos.",
+                proTip: "Treat hazardous materials seriously. Older homes may contain asbestos, which must be identified and managed safely before proceeding.",
+                resourceLinks: [
+                    { title: "CCOHS: Asbestos in the Home", url: "https://www.ccohs.ca/oshanswers/chemicals/asbestos/home.html" }
+                ]
+                },
+                {
+                id: 6,
+                title: "Foundation Repairs & Waterproofing",
+                icon: "wrench",
+                description: "Fix foundation cracks, leaks, damp spots, and air leaks at the rim joist. Seal penetrations around pipes, vents, and wiring using hydraulic cement or polyurethane injections.",
+                commonMistake: "Skipping the air sealing of the rim joists, leaving the finished basement incredibly drafty.",
+                proTip: "Save on Energy recommends sealing air leaks around the sill plate and utility penetrations before any new framing goes up."
+                }
+            ]
+            },
+            {
+            phaseId: 2,
+            phaseTitle: "Phase 2: Structure & Systems",
+            phaseSubtitle: "Framing, mechanicals, and crucial inspections.",
+            steps: [
+                {
+                id: 7,
+                title: "Choose Insulation Strategy",
+                icon: "layers",
+                imageUrl: "https://v0-basement-renovation-guide.vercel.app/images/basement-insulation.jpg",
+                description: "Select the right insulation (Rigid foam board, closed-cell spray foam, or framed walls with batt/mineral wool) based on your foundation's condition.",
+                commonMistake: "Stuffing standard fiberglass batts directly against a bare, damp concrete wall.",
+                proTip: "The Ontario Building Code (OBC 9.25.4) requires vapour barriers on the warm side of insulation to prevent condensation.",
+                resourceLinks: [
+                    { title: "NRCan Insulation Guidance", url: "https://natural-resources.canada.ca/energy-efficiency/home-energy-efficiency/keeping-heat-section-6-basement-insulation-floors-walls-crawl-spaces" },
+                    { title: "OBC 9.25.4 - Vapour Barriers", url: "https://www.ontario.ca/laws/regulation/120332#BK276" }
+                ]
+                },
+                {
+                id: 8,
+                title: "Frame the Walls",
+                icon: "hammer",
+                imageUrl: "https://v0-basement-renovation-guide.vercel.app/images/basement-renovation-hero.jpg",
+                description: "Build perimeter stud walls, interior partitions, bulkheads, and backing for vanities/TVs. Always use moisture-resistant (pressure-treated) lumber for bottom plates.",
+                commonMistake: "Building stud walls that permanently block access to essential plumbing cleanouts or electrical panels.",
+                proTip: "High-quality work coordinates the insulation strategy and framing together rather than figuring out insulation as an afterthought."
+                },
+                {
+                id: 9,
+                title: "Rough-In Plumbing, Electrical, HVAC",
+                icon: "zap",
+                description: "Install drains, water lines, wiring, boxes, smoke alarm wiring, and HVAC runs. This all happens before insulation or drywall goes up.",
+                commonMistake: "Not using protective steel nail plates on studs where wires pass through, risking a screw piercing a wire later.",
+                proTip: "ESA requires rough-in inspection before wiring is concealed by insulation, vapour barrier, or drywall.",
+                resourceLinks: [
+                    { title: "ESA Homeowner Info", url: "https://esasafe.com/home-renovation-buying-and-selling/homeowners/" }
+                ]
+                },
+                {
+                id: 10,
+                title: "Rough Inspections (CRITICAL)",
+                icon: "clipboard-check",
+                description: "Call the City of London and ESA for rough-in inspections before closing the walls. Have your permit drawings on site for the inspector.",
+                commonMistake: "Trying to hide unpermitted work by rushing to put up drywall before city inspectors arrive.",
+                proTip: "It is the owner's responsibility to call for required inspections. Failing to pass inspections now means tearing down drywall later.",
+                resourceLinks: [
+                    { title: "City of London Inspections", url: "https://london.ca/living-london/building-renovating/building-permits" },
+                    { title: "ESA Electrical Inspections", url: "https://esasafe.com/home-renovation-buying-and-selling/homeowners/" }
+                ]
+                },
+                {
+                id: 11,
+                title: "Install Insulation & Vapour Control",
+                icon: "wind",
+                description: "Install rigid foam, spray foam, or batt insulation. Apply and perfectly seal the vapour-control membrane/barrier using acoustic sealant and specialized tape.",
+                commonMistake: "Creating a 'double vapour barrier' (e.g., poly over foil-faced foam) which traps moisture inside the wall cavity and causes rot.",
+                proTip: "Gaps and sloppy transitions at the rim joist reduce performance. NRCan stresses proper air sealing alongside material choice.",
+                resourceLinks: [
+                    { title: "NRCan Air Leakage Control", url: "https://natural-resources.canada.ca/energy-efficiency/home-energy-efficiency/keeping-heat-section-4-comprehensive-air-leakage-control-your-home" }
+                ]
+                }
+            ]
+            },
+            {
+            phaseId: 3,
+            phaseTitle: "Phase 3: Finishes",
+            phaseSubtitle: "Drywall, aesthetics, and final sign-off.",
+            steps: [
+                {
+                id: 12,
+                title: "Drywall and Taping",
+                icon: "file-text",
+                description: "Hang drywall (use mold-resistant green board in wet areas like bathrooms), tape, mud, sand, and finish corners.",
+                commonMistake: "Resting the bottom edge of the drywall directly on the concrete floor where it will wick up moisture like a sponge.",
+                proTip: "Wait until after step 11 inspections are fully passed before hanging a single sheet of drywall. Leave a 1/2-inch gap at the floor."
+                },
+                {
+                id: 13,
+                title: "Prime and Paint",
+                icon: "paint-roller",
+                description: "Prime and paint the walls and ceilings before installing the flooring to protect your new floors from spills and ladder damage.",
+                commonMistake: "Installing expensive luxury flooring before messy painting and drywall mudding are fully completed.",
+                proTip: "Lighter tones can help basement spaces feel larger and brighter, which is great for resale value in the London market.",
+                resourceLinks: [
+                    { title: "Paint Colors That Sell", url: "https://lazord.ca/blog/paint-colors-that-sell" }
+                ]
+                },
+                {
+                id: 14,
+                title: "Install Flooring and Underlayment",
+                icon: "layers",
+                imageUrl: "https://v0-basement-renovation-guide.vercel.app/images/finished-basement.jpg",
+                description: "Install subfloor panel systems, moisture-tolerant underlayment, and finished flooring like Luxury Vinyl Plank (LVP), tile, or laminate.",
+                commonMistake: "Using solid hardwood or non-waterproof cheap laminate directly on a below-grade concrete slab.",
+                proTip: "Basement slabs behave differently from above-grade wood floors. Only use materials specifically designed for below-grade environments.",
+                resourceLinks: [
+                    { title: "Choosing the Right Flooring", url: "https://lazord.ca/blog/choosing-the-right-flooring" }
+                ]
+                },
+                {
+                id: 15,
+                title: "Finish Carpentry, Doors & Trim",
+                icon: "hammer",
+                description: "Install interior doors, door casings, baseboards, custom shelving, and access panels for mechanical shutoffs.",
+                commonMistake: "Pinning baseboards tight to a floating floor, which restricts the floor's ability to naturally expand and contract, causing buckling.",
+                proTip: "Ensure trim doesn't block access panels created during the framing phase for plumbing cleanouts."
+                },
+                {
+                id: 16,
+                title: "Final Fixtures & Final Inspection",
+                icon: "clipboard-check",
+                description: "Install plugs, switches, light fixtures, plumbing fixtures, and final HVAC covers. Balance the HVAC registers to ensure proper heating and cooling.",
+                commonMistake: "Skipping the final walkthrough with your contractor and failing to obtain the ESA certificate of acceptance.",
+                proTip: "ESA final inspection occurs after electrical completion. Successful work results in a certificate of acceptance. City of London requires final project sign-off.",
+                resourceLinks: [
+                    { title: "ESA Final Certificate", url: "https://esasafe.com/home-renovation-buying-and-selling/homeowners/" }
+                ]
+                }
+            ]
+            }
+        ];
+        
+        // --- State Management ---
+        let activePhase = 1;
+        let completedSteps = [];
+        let expandedStep = null;
+        const totalSteps = 16;
+        
+        // --- Global Functions for Event Listeners ---
+        window.setActivePhase = function(phaseId) {
+            activePhase = phaseId;
+            render();
+        };
+        
+        window.toggleExpand = function(stepId) {
+            if (expandedStep === stepId) {
+                expandedStep = null;
+            } else {
+                expandedStep = stepId;
+            }
+            renderSteps();
+            lucide.createIcons();
+        };
+        
+        window.toggleStepCompletion = function(stepId, event) {
+            event.stopPropagation();
+            if (completedSteps.includes(stepId)) {
+                completedSteps = completedSteps.filter(id => id !== stepId);
+            } else {
+                completedSteps.push(stepId);
+            }
+            render();
+        };
+        
+        // --- Render Functions ---
+        function updateProgress() {
+            const progressPercentage = Math.round((completedSteps.length / totalSteps) * 100);
+            document.getElementById('progress-percentage').textContent = `${progressPercentage}% Complete`;
+            document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+            document.getElementById('progress-text').textContent = `${completedSteps.length} of ${totalSteps} Steps Finished`;
+        }
+        
+        function renderSidebar() {
+            const sidebarContainer = document.getElementById('sidebar-phases');
+            sidebarContainer.innerHTML = renovationData.map(phase => {
+                const phaseSteps = phase.steps.map(s => s.id);
+                const completedInPhase = phaseSteps.filter(id => completedSteps.includes(id)).length;
+                const isPhaseComplete = completedInPhase === phaseSteps.length;
+                const isActive = activePhase === phase.phaseId;
+        
+                return `
+                    <button
+                        onclick="setActivePhase(${phase.phaseId})"
+                        class="text-left w-full min-w-[85vw] sm:min-w-[300px] md:min-w-0 flex-shrink-0 snap-center md:snap-none p-5 md:p-6 rounded-2xl transition-all duration-200 border-2 relative overflow-hidden ${
+                            isActive 
+                                ? 'border-teal-600 bg-white shadow-lg transform md:-translate-y-1' 
+                                : 'border-slate-200 bg-white shadow-sm hover:border-teal-300 hover:bg-teal-50/30'
+                        }"
+                    >
+                        ${isActive ? `<div class="absolute top-0 left-0 w-1.5 h-full bg-teal-600"></div>` : ''}
+                        <div class="flex justify-between items-start mb-2">
+                            <h2 class="font-bold text-base md:text-lg leading-tight pr-4 ${isActive ? 'text-teal-800' : 'text-slate-800'}">
+                                ${phase.phaseTitle}
+                            </h2>
+                            ${isPhaseComplete ? `<i data-lucide="check-circle" class="w-5 h-5 md:w-6 md:h-6 text-green-500 shrink-0"></i>` : ''}
+                        </div>
+                        <p class="text-xs md:text-sm text-slate-500 mb-3 md:mb-4 leading-relaxed line-clamp-2 md:line-clamp-none">${phase.phaseSubtitle}</p>
+                        <div class="text-[10px] md:text-xs font-bold text-slate-600 bg-slate-100 px-2 py-1 md:px-3 md:py-1.5 rounded-lg inline-block">
+                            ${completedInPhase} / ${phaseSteps.length} Steps Done
+                        </div>
+                    </button>
+                `;
+            }).join('');
+        }
+        
+        function renderSteps() {
+            const stepsContainer = document.getElementById('steps-container');
+            const phase = renovationData.find(p => p.phaseId === activePhase);
+            
+            document.getElementById('phase-title').textContent = phase.phaseTitle;
+            document.getElementById('phase-subtitle').textContent = phase.phaseSubtitle;
+        
+            stepsContainer.innerHTML = phase.steps.map(step => {
+                const isCompleted = completedSteps.includes(step.id);
+                const isExpanded = expandedStep === step.id;
+        
+                // Resource Links HTML Generator
+                const linksHtml = (step.resourceLinks && step.resourceLinks.length > 0) ? `
+                    <div class="pt-4 border-t border-slate-100">
+                        <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 md:mb-3">Relevant Resources</h5>
+                        <div class="flex flex-wrap gap-2 md:gap-3">
+                            ${step.resourceLinks.map(link => `
+                                <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-white hover:bg-slate-50 text-slate-700 hover:text-teal-700 text-xs md:text-sm font-semibold rounded-lg transition-all border border-slate-200 shadow-sm hover:shadow hover:border-teal-300 group">
+                                    ${link.title}
+                                    <i data-lucide="external-link" class="w-3 h-3 md:w-4 md:h-4 text-slate-400 group-hover:text-teal-500 transition-colors"></i>
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : '';
+        
+                // Image HTML Generator
+                const imageHtml = step.imageUrl ? `
+                    <div class="mb-4 sm:mb-6 mt-3 sm:mt-4 rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-50">
+                        <img src="${step.imageUrl}" alt="${step.title}" class="w-full h-40 sm:h-56 md:h-72 object-cover" loading="lazy" onerror="this.style.display='none'; this.parentElement.style.display='none';" />
+                    </div>
+                ` : '';
+        
+                return `
+                    <div class="border-2 rounded-2xl overflow-hidden transition-all duration-300 ${isCompleted ? 'border-green-100 bg-green-50/20' : isExpanded ? 'border-teal-200 bg-white shadow-md' : 'border-slate-100 bg-white hover:border-teal-200'}">
+                        
+                        <!-- Step Header -->
+                        <div class="p-4 sm:p-5 flex items-center gap-3 sm:gap-5 cursor-pointer select-none group" onclick="toggleExpand(${step.id})">
+                            <button onclick="toggleStepCompletion(${step.id}, event)" class="shrink-0 focus:outline-none transform transition-transform group-hover:scale-110" aria-label="Toggle completion">
+                                ${isCompleted 
+                                    ? `<i data-lucide="check-circle" class="w-7 h-7 sm:w-8 sm:h-8 text-green-500 hover:text-green-600 transition-colors drop-shadow-sm"></i>` 
+                                    : `<i data-lucide="circle" class="w-7 h-7 sm:w-8 sm:h-8 text-slate-300 hover:text-teal-500 transition-colors"></i>`
+                                }
+                            </button>
+                            
+                            <div class="flex-grow flex items-center gap-3 sm:gap-4">
+                                <div class="p-2 sm:p-3 rounded-xl transition-colors ${isCompleted ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600 group-hover:bg-teal-50 group-hover:text-teal-700'}">
+                                    <i data-lucide="${step.icon}" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                                </div>
+                                <h3 class="font-bold text-base sm:text-lg md:text-xl transition-colors ${isCompleted ? 'text-slate-400 line-through decoration-slate-300' : 'text-slate-800 group-hover:text-teal-800'}">
+                                    ${step.id}. ${step.title}
+                                </h3>
+                            </div>
+                            
+                            <div class="shrink-0 transition-transform duration-300 ${isExpanded ? 'text-teal-600 rotate-180' : 'text-slate-400'}">
+                                <i data-lucide="chevron-down" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                            </div>
+                        </div>
+        
+                        <!-- Step Details -->
+                        ${isExpanded ? `
+                            <div class="px-4 sm:px-5 pb-5 sm:pb-6 pt-1 sm:pt-2 ml-0 sm:ml-[4.5rem] md:ml-[5.5rem] border-t border-slate-100/80">
+                                ${imageHtml}
+                                <p class="text-slate-700 mb-5 sm:mb-6 text-sm sm:text-lg leading-relaxed">
+                                    ${step.description}
+                                </p>
+                                
+                                <div class="space-y-4 mb-5 sm:mb-6">
+                                    <div class="bg-red-50/50 border border-red-100 p-4 sm:p-5 rounded-xl relative overflow-hidden">
+                                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-red-400"></div>
+                                        <h4 class="text-red-800 font-bold text-xs sm:text-sm mb-1 sm:mb-2 uppercase tracking-wider flex items-center gap-2">
+                                            <i data-lucide="x-circle" class="w-4 h-4 sm:w-5 sm:h-5 text-red-500"></i> Common Mistake
+                                        </h4>
+                                        <p class="text-red-900/90 text-sm sm:text-base font-medium leading-relaxed pl-6 sm:pl-7">${step.commonMistake}</p>
+                                    </div>
+        
+                                    <div class="bg-teal-50 border border-teal-100 p-4 sm:p-5 rounded-xl relative overflow-hidden">
+                                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-teal-500"></div>
+                                        <h4 class="text-teal-800 font-bold text-xs sm:text-sm mb-1 sm:mb-2 uppercase tracking-wider flex items-center gap-2">
+                                            <i data-lucide="check-circle" class="w-4 h-4 sm:w-5 sm:h-5 text-teal-600"></i> ✅ Solution & Pro Tip
+                                        </h4>
+                                        <p class="text-teal-900 text-sm sm:text-base leading-relaxed pl-6 sm:pl-7">${step.proTip}</p>
+                                    </div>
+                                </div>
+        
+                                ${linksHtml}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // --- Master Render Coordinator ---
+        function render() {
+            renderSidebar();
+            renderSteps();
+            updateProgress();
+            lucide.createIcons(); // Initialize the SVG icons for newly rendered HTML
+        }
+        
+        // --- Initialize App ---
+        document.addEventListener('DOMContentLoaded', () => {
+            render();
+        });
+    </script>
+</body>
+</html>
