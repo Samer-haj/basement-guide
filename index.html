@@ -100,12 +100,14 @@
                         <p class="text-base md:text-lg text-slate-600 leading-relaxed">A practical, step-by-step checklist based on London, Ontario building guidelines to help you plan smarter and avoid costly mistakes.</p>
                     </div>
                     
+                    <!-- Official Lazord Logo -->
                     <img 
                         src="Color%20logo%20-%20no%20background.png" 
                         alt="Lazord Contracting Logo" 
                         class="h-12 sm:h-16 md:h-20 shrink-0 object-contain drop-shadow-sm mb-2 md:mb-0"
                         onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='block';"
                     />
+                    <!-- Fallback if image isn't in folder yet -->
                     <svg id="logo-fallback" style="display: none;" viewBox="0 0 500 180" class="h-12 sm:h-16 md:h-20 shrink-0 drop-shadow-sm mb-2 md:mb-0" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Lazord Contracting Logo">
                         <path d="M 180 50 C 230 15 280 15 360 60" stroke="#0d8482" stroke-width="8" stroke-linecap="round"/>
                         <path d="M 130 65 L 260 65" stroke="#0d8482" stroke-width="8" stroke-linecap="round"/>
@@ -132,15 +134,20 @@
 
             <div class="flex flex-col md:flex-row gap-6 md:gap-8">
                 
+                <!-- Sidebar / Phase Navigation -->
                 <div class="md:w-1/3 flex flex-col gap-3 md:gap-4 overflow-hidden w-full">
+                    
                     <div class="flex justify-between items-end px-1 md:px-2">
                         <h3 class="font-bold text-base md:text-lg text-slate-900">Renovation Phases</h3>
+                        
+                        <!-- Mobile Swipe Indicator -->
                         <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-teal-800 bg-teal-100 border border-teal-200 px-3 py-1.5 rounded-full font-bold md:hidden tracking-wide uppercase shadow-sm">
                             <span>Swipe</span>
                             <i data-lucide="arrow-left-right" class="w-4 h-4 animate-swipe"></i>
                         </div>
                     </div>
                     
+                    <!-- Mobile Optimization: Horizontal scrolling for phases -->
                     <div class="relative w-full">
                         <div id="sidebar-phases" class="flex flex-row md:flex-col gap-3 md:gap-4 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x hide-scrollbar pr-8 md:pr-0">
                             <!-- JS Injection Point -->
@@ -148,6 +155,7 @@
                         <div class="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-slate-50 to-transparent pointer-events-none md:hidden"></div>
                     </div>
 
+                    <!-- Warning Box -->
                     <div class="mt-2 md:mt-4 bg-white border-l-4 border-amber-500 shadow-sm p-4 md:p-5 rounded-r-xl flex gap-3 md:gap-4 text-slate-800">
                         <i data-lucide="alert-triangle" class="w-5 h-5 md:w-6 md:h-6 shrink-0 text-amber-500 mt-0.5"></i>
                         <div class="text-xs md:text-sm leading-relaxed">
@@ -157,6 +165,7 @@
                     </div>
                 </div>
 
+                <!-- Main Content Area -->
                 <div class="md:w-2/3 bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 min-h-[600px]">
                     <div class="mb-6 md:mb-8 border-b border-slate-100 pb-4">
                         <h2 id="phase-title" class="text-2xl sm:text-3xl font-extrabold text-slate-900"></h2>
@@ -369,11 +378,14 @@
         let completedSteps = [];
         let expandedStep = 1; 
         const totalSteps = 16;
-        
-        window.setActivePhase = function(phaseId) {
+        let observer = null;
+        let isManualClick = false;
+
+        window.setActivePhase = function(phaseId, fromSwipe = false) {
             if (activePhase === phaseId) return;
             activePhase = phaseId;
             
+            // Auto-expand first step of the new phase
             const phase = renovationData.find(p => p.phaseId === phaseId);
             if (phase && phase.steps.length > 0) expandedStep = phase.steps[0].id;
             
@@ -381,9 +393,15 @@
             updateSidebarUI();
             if (window.lucide) lucide.createIcons();
             
-            const btn = document.querySelector(`.phase-btn[data-phase-id="${phaseId}"]`);
-            if (btn && window.innerWidth >= 768) {
-                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            // Only scroll buttons on desktop click or specifically if not from swipe
+            if (!fromSwipe) {
+                const btn = document.querySelector(`.phase-btn[data-phase-id="${phaseId}"]`);
+                if (btn) {
+                    isManualClick = true;
+                    btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    // Briefly ignore observer triggers during manual scroll
+                    setTimeout(() => isManualClick = false, 1000);
+                }
             }
         };
         
@@ -421,7 +439,6 @@
             const sidebarContainer = document.getElementById('sidebar-phases');
             if (!sidebarContainer) return;
 
-            // Clear the comment and inject buttons if no phase buttons exist
             if (sidebarContainer.querySelectorAll('.phase-btn').length === 0) {
                 sidebarContainer.innerHTML = renovationData.map(phase => {
                     return `
@@ -443,32 +460,28 @@
                     `;
                 }).join('');
 
-                sidebarContainer.addEventListener('scroll', () => {
-                    if (window.innerWidth >= 768) return; 
-                    
-                    clearTimeout(window.scrollTimeout);
-                    window.scrollTimeout = setTimeout(() => {
-                        const containerRect = sidebarContainer.getBoundingClientRect();
-                        const containerCenter = containerRect.left + containerRect.width / 2;
-                        
-                        let closestPhase = activePhase;
-                        let minDistance = Infinity;
-                        
-                        document.querySelectorAll('.phase-btn').forEach(btn => {
-                            const rect = btn.getBoundingClientRect();
-                            const btnCenter = rect.left + rect.width / 2;
-                            const distance = Math.abs(btnCenter - containerCenter);
-                            if (distance < minDistance) {
-                                minDistance = distance;
-                                closestPhase = parseInt(btn.getAttribute('data-phase-id'));
+                // Setup Intersection Observer for automatic phase detection on mobile swipe
+                if (window.IntersectionObserver) {
+                    const options = {
+                        root: sidebarContainer,
+                        threshold: 0.6
+                    };
+
+                    observer = new IntersectionObserver((entries) => {
+                        if (window.innerWidth >= 768 || isManualClick) return;
+
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                const phaseId = parseInt(entry.target.getAttribute('data-phase-id'));
+                                if (phaseId !== activePhase) {
+                                    setActivePhase(phaseId, true);
+                                }
                             }
                         });
-                        
-                        if (closestPhase !== activePhase) {
-                            setActivePhase(closestPhase);
-                        }
-                    }, 150);
-                });
+                    }, options);
+
+                    sidebarContainer.querySelectorAll('.phase-btn').forEach(btn => observer.observe(btn));
+                }
             }
             
             updateSidebarUI();
